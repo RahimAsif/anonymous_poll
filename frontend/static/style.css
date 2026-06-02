@@ -1,0 +1,154 @@
+body {
+    font-family: system-ui, Arial, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 40px 0;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 700px;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #222;
+}
+
+.subtitle {
+    margin-top: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.input, .textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.button {
+    background: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background: #005fcc;
+}
+
+.options button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background: #4caf50;
+    color: white;
+    cursor: pointer;
+}
+
+.options button:hover {
+    background: #3e8e41;
+}
+
+.codes-box {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+}
+
+.result-row {
+    margin: 10px 0;
+}
+
+.result-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.result-bar-container {
+    background: #e5e7eb;
+    border-radius: 8px;
+    height: 22px;
+    overflow: hidden;
+}
+
+.result-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #2e7d32);
+    width: 0%;
+    border-radius: 8px;
+    transition: width 1.2s ease;
+}
+
+button {
+    background: #4caf50; /* default */
+}
+
+/* Make option colors override ANY default button style */
+.option-color-0,
+.option-color-1,
+.option-color-2,
+.option-color-3,
+.option-color-4,
+.option-color-5 {
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+
+.option-color-0 { background: #4caf50 !important; }
+.option-color-1 { background: #f44336 !important; }
+.option-color-2 { background: #2196f3 !important; }
+.option-color-3 { background: #ff9800 !important; }
+.option-color-4 { background: #9c27b0 !important; }
+.option-color-5 { background: #009688 !important; }
+
+
+/* Hover effect */
+.option-color-0:hover { background: #3e8e41; }
+.option-color-1:hover { background: #d32f2f; }
+.option-color-2:hover { background: #1976d2; }
+.option-color-3:hover { background: #fb8c00; }
+.option-color-4:hover { background: #7b1fa2; }
+.option-color-5:hover { background: #00796b; }
+
+/* Matching bar gradients */
+.bar-color-0 { background: linear-gradient(90deg, #4caf50, #2e7d32); }
+.bar-color-1 { background: linear-gradient(90deg, #f44336, #c62828); }
+.bar-color-2 { background: linear-gradient(90deg, #2196f3, #1565c0); }
+.bar-color-3 { background: linear-gradient(90deg, #ff9800, #ef6c00); }
+.bar-color-4 { background: linear-gradient(90deg, #9c27b0, #6a1b9a); }
+.bar-color-5 { background: linear-gradient(90deg, #009688, #00695c); }
+

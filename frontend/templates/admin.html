@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Poll Admin</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Admin Panel</h1>
+
+      <div class="card">
+        <h2 class="subtitle">Create Poll</h2>
+
+        <label class="label">Question</label>
+        <input type="text" id="question" class="input" />
+
+        <label class="label">Options (one per line)</label>
+        <textarea id="options" rows="6" class="textarea"></textarea>
+
+        <button class="button" onclick="createPoll()">Create Poll</button>
+      </div>
+
+      <div class="card">
+        <h2 class="subtitle">Generate Voting Codes</h2>
+
+        <label class="label">Number of codes</label>
+        <input id="codeCount" type="number" value="10" class="input" />
+
+        <button class="button" onclick="generateCodes()">Generate Codes</button>
+
+        <pre id="generatedCodes" class="codes-box"></pre>
+      </div>
+
+      <div class="card">
+        <h2 class="subtitle">Existing Polls</h2>
+        <div id="polls"></div>
+      </div>
+    </div>
+
+    <script src="/static/admin.js"></script>
+    <script>
+      loadPolls();
+    </script>
+  </body>
+</html>
