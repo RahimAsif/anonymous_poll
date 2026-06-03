@@ -4,8 +4,9 @@ import secrets
 from flask import Flask, request, jsonify, render_template, g
 from dotenv import load_dotenv
 
+DB_NAME = "poll.db"
 DB_PATH = os.environ.get(
-    "DB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "poll.db")
+    "DB_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), DB_NAME)
 )
 
 
