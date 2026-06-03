@@ -2,6 +2,7 @@ import os
 import sqlite3
 import secrets
 from flask import Flask, request, jsonify, render_template, g
+from dotenv import load_dotenv
 
 # IMPORTANT — define DB_PATH before using it
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -262,4 +263,5 @@ def vote():
 
 if __name__ == "__main__":
     # For local dev
+    load_dotenv()
     app.run(debug=True)

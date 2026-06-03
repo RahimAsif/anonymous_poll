@@ -152,3 +152,38 @@ button {
 .bar-color-4 { background: linear-gradient(90deg, #9c27b0, #6a1b9a); }
 .bar-color-5 { background: linear-gradient(90deg, #009688, #00695c); }
 
+.selected-option {
+    outline: 3px solid #000;
+    transform: scale(1.03);
+    transition: 0.15s;
+}
+
+.submit-btn {
+    background: #292727 !important;          /* soft grey */
+    color: #333;                  /* dark text */
+    border: 1px solid #b5b5b5;    /* subtle border */
+    padding: 12px 22px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 30px !important;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+}
+
+/* Hover effect */
+.submit-btn:hover {
+    background: lightblue !important;
+    color: black !important;    
+    transform: translateY(-1px) !important;
+    border: 3px solid green !important;
+}
+
+.card {
+    border: 3px solid green;
+}
+
+.question {
+    font-style: italic;
+}
