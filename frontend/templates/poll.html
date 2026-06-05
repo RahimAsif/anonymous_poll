@@ -1,34 +1,96 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>PS Anonymous Poll</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <title>Poll – {{ poll.question }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
-  <body>
-    <div class="container">
-      <h1 class="title">Pacific Sharks Anonymous Poll</h1>
-
-      <div class="card">
-        <label class="label">Enter your voting code</label>
-        <input id="code" class="input" placeholder="Enter your code" />
+  <body class="page">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="brand">Pacific Sharks Poll</div>
       </div>
-
-      <div class="card" id="actual_poll">
-        <h2 id="question" class="question"></h2>
-        <div id="options" class="options"></div>
+      <div class="top-bar-right">
+        <a href="{{ url_for('admin') }}" class="top-link">Admin</a>
       </div>
+    </header>
 
-      <div class="card">
-        <h3 class="subtitle">Live Results</h3>
-        <div id="results"></div>
-      </div>
-    </div>
+    <main class="content">
+      <section class="card">
+        <h1 class="card-title">{{ poll.question }}</h1>
 
-    <script src="/static/app.js"></script>
+        {% if poll.multiple_allowed %}
+        <p class="muted">
+          You may select {% if poll.max_choices %} up to
+          <strong>{{ poll.max_choices }}</strong> options. {% else %} multiple
+          options. {% endif %}
+        </p>
+        {% else %}
+        <p class="muted">Please select exactly one option.</p>
+        {% endif %}
+
+        <div class="field-label">Enter your voting code</div>
+        <div class="field-row">
+          <input
+            type="text"
+            id="code-input"
+            class="field-input-inline"
+            placeholder="e.g. A7F9Q2"
+          />
+          <button id="validate-code" class="btn btn-primary" type="button">
+            Validate code
+          </button>
+        </div>
+        <div class="status" id="code-status"></div>
+
+        <div id="poll-section" class="poll-section" style="display: none">
+          <div class="option-list" id="option-list">
+            {% for opt in options %}
+            <div class="option-item">
+              {% if poll.multiple_allowed %}
+              <label class="option-label">
+                <input type="checkbox" class="multi-opt" value="{{ opt.id }}" />
+                <span>{{ opt.option_text }}</span>
+              </label>
+              {% else %}
+              <label class="option-label">
+                <input
+                  type="radio"
+                  name="single-opt"
+                  class="single-opt"
+                  value="{{ opt.id }}"
+                />
+                <span>{{ opt.option_text }}</span>
+              </label>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <button id="submit-vote" class="btn btn-primary" type="button">
+            Submit vote
+          </button>
+          <div id="status" class="status"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">Results</h2>
+        <div class="results" id="results"></div>
+      </section>
+    </main>
+
     <script>
-      const POLL_ID = {{ poll_id }};
-      initPoll(POLL_ID);
+      window.POLL_CONFIG = {
+        pollId: {{ poll.id }},
+        multipleAllowed: {{ poll.multiple_allowed }},
+        maxChoices: {{ poll.max_choices if poll.max_choices is not none else 'null' }},
+        hideResults: {{ poll.hide_results }}
+      };
     </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
   </body>
 </html>
