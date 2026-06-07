@@ -131,10 +131,40 @@ submitBtn.addEventListener("click", async () => {
       return;
     }
     setVoteStatus("Vote submitted!", "success");
-    // After successful vote, prevent reuse of this code in UI
+
+    // Show the user's selected choices
+    const yourVoteCard = document.getElementById("your-vote");
+    const yourVoteList = document.getElementById("your-vote-list");
+
+    yourVoteList.innerHTML = ""; // clear previous
+
+    // Get selected option text
+    const selectedIds = optionIds;
+    const optionLabels = Array.from(document.querySelectorAll(".option-label"));
+
+    selectedIds.forEach((id) => {
+      const label = optionLabels.find((l) => {
+        const input = l.querySelector("input");
+        return parseInt(input.value, 10) === id;
+      });
+
+      if (label) {
+        const div = document.createElement("div");
+        div.textContent = "• " + label.innerText.trim();
+        yourVoteList.appendChild(div);
+      }
+    });
+
+    yourVoteCard.style.display = "block";
+
+    // Prevent reuse of code
     codeValidated = false;
     validatedCode = null;
+
+    // Hide voting UI
     pollSection.style.display = "none";
+
+    // Refresh results
     loadResults();
   } catch (err) {
     console.error(err);
