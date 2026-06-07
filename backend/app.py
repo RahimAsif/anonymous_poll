@@ -2,7 +2,16 @@ import os
 import sqlite3
 import random
 import string
-from flask import Flask, request, jsonify, render_template, g, redirect, url_for
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    render_template,
+    g,
+    redirect,
+    url_for,
+    send_file,
+)
 
 # --- Paths for backend/frontend split ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -173,9 +182,47 @@ def create_poll():
     return jsonify({"success": True, "poll_id": poll_id})
 
 
+from flask import send_file
+
+
+# ---------- API: reset database ----------
+@app.route("/admin/reset-db", methods=["POST"])
+def reset_db():
+    db = get_db()
+
+    # Drop all tables
+    db.executescript("""
+        DROP TABLE IF EXISTS votes;
+        DROP TABLE IF EXISTS codes;
+        DROP TABLE IF EXISTS options;
+        DROP TABLE IF EXISTS polls;
+    """)
+
+    # Recreate schema
+    with open(os.path.join(BASE_DIR, "schema.sql"), "r") as f:
+        db.executescript(f.read())
+
+    db.commit()
+
+    return jsonify({"success": True, "message": "Database reset successfully"})
+
+
+# ---------- API: download database ----------
+@app.route("/admin/download-db")
+def download_db():
+    # Only allow if DB exists
+    if not os.path.exists(DB_PATH):
+        return "Database not found", 404
+
+    return send_file(
+        DB_PATH,
+        as_attachment=True,
+        download_name="poll.db",
+        mimetype="application/octet-stream",
+    )
+
+
 # ---------- API: generate codes for a poll ----------
-
-
 @app.route("/api/polls/<int:poll_id>/generate-codes", methods=["POST"])
 def generate_codes_endpoint(poll_id):
     data = request.get_json(force=True)
@@ -198,8 +245,6 @@ def generate_codes_endpoint(poll_id):
 
 
 # ---------- API: validate code ----------
-
-
 @app.route("/api/polls/<int:poll_id>/validate-code", methods=["POST"])
 def validate_code(poll_id):
     data = request.get_json(force=True)
@@ -222,8 +267,6 @@ def validate_code(poll_id):
 
 
 # ---------- API: cast vote (with code) ----------
-
-
 @app.route("/api/polls/<int:poll_id>/vote", methods=["POST"])
 def vote(poll_id):
     data = request.get_json(force=True)
@@ -294,8 +337,6 @@ def vote(poll_id):
 
 
 # ---------- API: results ----------
-
-
 @app.route("/api/polls/<int:poll_id>/results")
 def poll_results(poll_id):
     db = get_db()
@@ -334,6 +375,26 @@ def poll_results(poll_id):
             ],
         }
     )
+
+
+# ---------- API: set poll visibility ----------
+@app.route("/api/polls/<int:poll_id>/set-visibility", methods=["POST"])
+def set_poll_visibility(poll_id):
+    data = request.get_json(force=True)
+    hide = data.get("hide_results")
+
+    if hide not in [0, 1]:
+        return jsonify({"error": "hide_results must be 0 or 1"}), 400
+
+    db = get_db()
+    poll = db.execute("SELECT id FROM polls WHERE id = ?", (poll_id,)).fetchone()
+    if not poll:
+        return jsonify({"error": "Poll not found"}), 404
+
+    db.execute("UPDATE polls SET hide_results = ? WHERE id = ?", (hide, poll_id))
+    db.commit()
+
+    return jsonify({"success": True, "hide_results": hide})
 
 
 if __name__ == "__main__":
