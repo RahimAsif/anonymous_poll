@@ -136,9 +136,8 @@ submitBtn.addEventListener("click", async () => {
     const yourVoteCard = document.getElementById("your-vote");
     const yourVoteList = document.getElementById("your-vote-list");
 
-    yourVoteList.innerHTML = ""; // clear previous
+    yourVoteList.innerHTML = "";
 
-    // Get selected option text
     const selectedIds = optionIds;
     const optionLabels = Array.from(document.querySelectorAll(".option-label"));
 
@@ -157,12 +156,19 @@ submitBtn.addEventListener("click", async () => {
 
     yourVoteCard.style.display = "block";
 
+    // Hide voting UI
+    pollSection.style.display = "none";
+
+    // Hide code section completely
+    document.getElementById("code-input").closest(".field-row").style.display =
+      "none";
+    document.querySelector(".field-label").style.display = "none";
+    document.getElementById("validate-code").style.display = "none";
+    document.getElementById("code-status").style.display = "none";
+
     // Prevent reuse of code
     codeValidated = false;
     validatedCode = null;
-
-    // Hide voting UI
-    pollSection.style.display = "none";
 
     // Refresh results
     loadResults();
