@@ -12,26 +12,6 @@ const generateCodesConfirm = document.getElementById("generate-codes-confirm");
 
 let currentCodesPollId = null;
 
-function addOptionRow(value = "") {
-  const row = document.createElement("div");
-  row.className = "field-row";
-  row.innerHTML = `
-    <input type="text" class="field-input option-input" placeholder="Option text" value="${value}">
-    <button type="button" class="btn btn-secondary remove-option">Remove</button>
-  `;
-  optionsContainer.appendChild(row);
-
-  row.querySelector(".remove-option").addEventListener("click", () => {
-    optionsContainer.removeChild(row);
-  });
-}
-
-// initial two options
-addOptionRow();
-addOptionRow();
-
-addOptionBtn.addEventListener("click", () => addOptionRow());
-
 createPollBtn.addEventListener("click", async () => {
   statusDiv.textContent = "";
   statusDiv.className = "status";
@@ -43,10 +23,12 @@ createPollBtn.addEventListener("click", async () => {
   const maxChoicesRaw = document.getElementById("max_choices").value;
   const hideResults = document.getElementById("hide_results").checked ? 1 : 0;
 
-  const optionInputs = Array.from(document.querySelectorAll(".option-input"));
-  const options = optionInputs
-    .map((i) => i.value.trim())
-    .filter((v) => v.length > 0);
+  const raw = document.getElementById("options-textarea").value;
+
+  const options = raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
 
   if (!question) {
     statusDiv.textContent = "Question is required.";
