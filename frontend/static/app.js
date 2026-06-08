@@ -179,46 +179,85 @@ submitBtn.addEventListener("click", async () => {
 });
 
 async function loadResults() {
+  const pollId = pollSection?.getAttribute("data-poll-id");
+  const resultsDiv = document.getElementById("results");
+
+  if (!pollId || !resultsDiv) {
+    console.error("Missing pollId or resultsDiv");
+    return;
+  }
+
+  resultsDiv.innerHTML = "";
+
   try {
     const res = await fetch(`/api/polls/${pollId}/results`);
     const data = await res.json();
-    if (!res.ok || data.error) {
-      resultsDiv.textContent = data.error || "Error loading results.";
-      return;
-    }
 
+    // Hidden results
     if (data.hidden) {
       resultsDiv.innerHTML = `
-        <p class="muted">
-          Results are currently hidden for this poll.
-        </p>
-        <p>Total votes cast: <strong>${data.total_votes}</strong></p>
+        <div class="muted">
+          Results are currently hidden.<br>
+          <strong>Total voters:</strong> ${data.total_voters}<br>
+          <strong>Total selections:</strong> ${data.total_selections}
+        </div>
       `;
       return;
     }
 
-    const results = data.results;
-    const totalVotes = results.reduce((sum, r) => sum + r.votes, 0) || 1;
+    // Visible results header
+    resultsDiv.innerHTML = `
+      <div class="muted">
+        <strong>Total voters:</strong> ${data.total_voters}<br>
+        <strong>Total selections:</strong> ${data.total_selections}
+      </div>
+    `;
 
-    resultsDiv.innerHTML = "";
-    results.forEach((r) => {
-      const pct = Math.round((r.votes / totalVotes) * 100);
-      const row = document.createElement("div");
-      row.className = "result-row";
-      row.innerHTML = `
-        <div class="result-header">
-          <span>${r.option_text}</span>
-          <span>${r.votes} vote(s) • ${pct}%</span>
-        </div>
-        <div class="bar-container">
-          <div class="bar" style="width: ${pct}%;"></div>
+    // Only show options with at least 1 vote
+    let nonZero = data.results.filter((r) => r.votes > 0);
+
+    if (nonZero.length === 0) {
+      resultsDiv.innerHTML += `
+        <div class="muted" style="margin-top:10px;">
+          No votes yet.
         </div>
       `;
+      return;
+    }
+
+    // Sort by highest votes
+    nonZero.sort((a, b) => b.votes - a.votes);
+
+    // Loop through results
+    nonZero.forEach((r) => {
+      const row = document.createElement("div");
+      row.className = "result-row";
+
+      // ⭐ Bar width based on % of total voters
+      const width =
+        data.total_voters > 0
+          ? Math.round((r.votes / data.total_voters) * 100)
+          : 0;
+
+      // ⭐ Percentage text also based on total voters
+      const pct = width;
+
+      const voteLabel = r.votes === 1 ? "1 vote" : `${r.votes} votes`;
+
+      row.innerHTML = `
+      <div class="result-label">${r.option_text}</div>
+      <div class="result-bar">
+        <div class="result-bar-fill" style="width:${width}%">
+          ${voteLabel} (${pct}%)
+        </div>
+      </div>
+    `;
+
       resultsDiv.appendChild(row);
     });
   } catch (err) {
     console.error(err);
-    resultsDiv.textContent = "Network error loading results.";
+    resultsDiv.textContent = "Error loading results.";
   }
 }
 

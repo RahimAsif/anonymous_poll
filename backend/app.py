@@ -368,40 +368,61 @@ def vote(poll_id):
 def poll_results(poll_id):
     db = get_db()
 
+    # Fetch poll
     poll = db.execute(
-        "SELECT hide_results FROM polls WHERE id = ?", (poll_id,)
+        "SELECT * FROM polls WHERE id = ?",
+        (poll_id,)
     ).fetchone()
+
     if not poll:
         return jsonify({"error": "Poll not found"}), 404
 
-    if poll["hide_results"] == 1:
-        total = db.execute(
-            "SELECT COUNT(*) AS c FROM votes WHERE poll_id = ?", (poll_id,)
-        ).fetchone()["c"]
-        return jsonify({"hidden": True, "total_votes": total})
+    # Count unique voters (distinct used codes)
+    total_voters = db.execute(
+        "SELECT COUNT(*) AS c FROM codes WHERE poll_id = ? AND used = 1",
+        (poll_id,)
+    ).fetchone()["c"]
 
-    rows = db.execute(
-        """
+    # Count total selections (each vote row)
+    total_selections = db.execute(
+        "SELECT COUNT(*) AS c FROM votes WHERE poll_id = ?",
+        (poll_id,)
+    ).fetchone()["c"]
+
+    # If results are hidden, return only totals
+    if poll["hide_results"] == 1:
+        return jsonify({
+            "hidden": True,
+            "total_voters": total_voters,
+            "total_selections": total_selections
+        })
+
+    # Fetch per-option results
+    rows = db.execute("""
         SELECT o.id, o.option_text,
                COUNT(v.id) AS votes
         FROM options o
         LEFT JOIN votes v ON v.option_id = o.id
         WHERE o.poll_id = ?
-        GROUP BY o.id, o.option_text
+        GROUP BY o.id
         ORDER BY o.id
-        """,
-        (poll_id,),
-    ).fetchall()
+    """, (poll_id,)).fetchall()
 
-    return jsonify(
-        {
-            "hidden": False,
-            "results": [
-                {"id": r["id"], "option_text": r["option_text"], "votes": r["votes"]}
-                for r in rows
-            ],
-        }
-    )
+    return jsonify({
+        "hidden": False,
+        "total_voters": total_voters,
+        "total_selections": total_selections,
+        "results": [
+            {
+                "id": r["id"],
+                "option_text": r["option_text"],
+                "votes": r["votes"]
+            }
+            for r in rows
+        ]
+    })
+
+
 
 
 # ---------- API: set poll visibility ----------

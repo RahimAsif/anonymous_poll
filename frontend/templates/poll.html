@@ -15,7 +15,7 @@
 
     <main class="content">
       <section class="card">
-        <h1 class="card-title">{{ poll.question }}</h1>
+        <h1 class="card-title" id="poll-question">{{ poll.question }}</h1>
 
         {% if poll.multiple_allowed %}
         <p class="muted">
@@ -41,7 +41,12 @@
         </div>
         <div class="status" id="code-status"></div>
 
-        <div id="poll-section" class="poll-section" style="display: none">
+        <div
+          id="poll-section"
+          data-poll-id="{{ poll.id }}"
+          class="poll-section"
+          style="display: none"
+        >
           <div class="option-list" id="option-list">
             {% for opt in options %}
             <div class="option-item">
@@ -82,7 +87,7 @@
       </section>
 
       <section class="card">
-        <h2 class="card-title">Results</h2>
+        <h2 class="card-title" id="results-header">Results</h2>
         <div class="results" id="results"></div>
       </section>
     </main>
