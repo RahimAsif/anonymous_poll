@@ -133,6 +133,21 @@
         ></textarea>
       </section>
     </main>
+    <script>
+      const ADMIN_PASSWORD = "Q12ABC?"; // change to whatever you want
+
+      const entered = sessionStorage.getItem("admin_ok");
+
+      if (!entered) {
+        const pwd = prompt("Enter admin password:");
+        if (pwd !== ADMIN_PASSWORD) {
+          alert("Incorrect password.");
+          window.location.href = "/"; // send them away
+        } else {
+          sessionStorage.setItem("admin_ok", "true");
+        }
+      }
+    </script>
 
     <script src="{{ url_for('static', filename='admin.js') }}"></script>
   </body>

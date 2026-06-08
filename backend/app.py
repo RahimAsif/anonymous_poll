@@ -95,10 +95,16 @@ def generate_unique_codes(db, poll_id, count):
 
 @app.route("/")
 def home():
-    # Simple landing: list polls
     db = get_db()
-    polls = db.execute("SELECT id, question FROM polls ORDER BY id DESC").fetchall()
-    return render_template("admin.html", polls=polls)
+    poll = db.execute(
+        "SELECT id FROM polls ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+
+    if poll:
+        return redirect(f"/poll/{poll['id']}")
+
+    return "No polls exist yet."
+
 
 
 @app.route("/admin")
@@ -182,9 +188,6 @@ def create_poll():
     return jsonify({"success": True, "poll_id": poll_id})
 
 
-from flask import send_file
-
-
 # ---------- API: reset database ----------
 @app.route("/admin/reset-db", methods=["POST"])
 def reset_db():
@@ -205,6 +208,30 @@ def reset_db():
     db.commit()
 
     return jsonify({"success": True, "message": "Database reset successfully"})
+
+
+@app.route("/admin/delete-db", methods=["POST"])
+def delete_db():
+    # Close DB connection if open
+    db = g.pop("db", None)
+    if db:
+        db.close()
+
+    # Delete the file
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+    else:
+        return jsonify({"error": "Database file not found"}), 404
+
+    # Recreate empty DB + schema
+    with open(DB_PATH, "w"):
+        pass
+
+    with app.app_context():
+        init_db()
+
+    return jsonify({"success": True, "message": "Database deleted and recreated"})
+
 
 
 # ---------- API: download database ----------
